@@ -99,12 +99,8 @@ namespace CosmosDBGremlinFlights.Console
 
                         var route = Tuple.Create(from, to);
 
-
-
                         airports.TryGetValue(from, out var fromAirport);
                         airports.TryGetValue(to, out var toAirport);
-
-
 
                         var isDirect = stops == "0";
 
