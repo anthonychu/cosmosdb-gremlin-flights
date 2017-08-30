@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.15
+VisualStudioVersion = 15.0.26823.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CosmosDBGremlinFlights.Console", "CosmosDBGremlinFlights.Console\CosmosDBGremlinFlights.Console.csproj", "{0DDD443D-B531-418D-B091-20126444157C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CosmosDBGremlinFlights.Web", "CosmosDBGremlinFlights.Web\CosmosDBGremlinFlights.Web.csproj", "{6348BD30-130E-48A6-AF49-4DD171659DD7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,8 +17,15 @@ Global
 		{0DDD443D-B531-418D-B091-20126444157C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0DDD443D-B531-418D-B091-20126444157C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0DDD443D-B531-418D-B091-20126444157C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6348BD30-130E-48A6-AF49-4DD171659DD7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6348BD30-130E-48A6-AF49-4DD171659DD7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6348BD30-130E-48A6-AF49-4DD171659DD7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6348BD30-130E-48A6-AF49-4DD171659DD7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5871DA8E-95EB-4AEB-BB4E-91E949CE42B6}
 	EndGlobalSection
 EndGlobal
