@@ -1,0 +1,68 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <h1>Find Flights</h1>
+        <form class="form-inline" method="get">
+            <input type="text" name="from" class="form-control" placeholder="From" />
+            <input type="text" name="to" class="form-control" placeholder="To" />
+            <input type="submit"class="btn btn-default" value="Submit" />
+        </form>
+        <hr />
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div id='myMap' style='width: 100%; height: 70vh;'></div>
+    </div>
+</div>
+
+
+<script type='text/javascript'>
+
+    var journeys = @Html.Raw(ViewBag.JourneysJson);
+
+    var map;
+    function loadMapScenario() {
+        map = new Microsoft.Maps.Map(document.getElementById('myMap'), {
+            credentials: '@ViewBag.BingMapsKey'
+        });
+        map.setView({ zoom: 1 });
+        var allLocations = [];
+        var airportCodes = {};
+
+        journeys.forEach(function (journey) {
+            var locations = journey.Airports.map(a => new Microsoft.Maps.Location(a.Latitude, a.Longitude));
+            allLocations.push(...locations);
+
+            var isDirectFlight = journey.Airports.length === 2;
+            var polyline = new Microsoft.Maps.Polyline(locations, {
+                strokeColor: isDirectFlight ? 'green' : 'blue',
+                strokeThickness: isDirectFlight ? 3 : 1
+            });
+            map.entities.push(polyline);
+
+            var fromAirport = journey.Airports[0];
+            var toAirport = journey.Airports[journey.Airports.length - 1];
+
+            journey.Airports.forEach(function (a) {
+                if (!airportCodes[a.Code]) {
+                    var pushpin = new Microsoft.Maps.Pushpin( new Microsoft.Maps.Location(a.Latitude, a.Longitude), {
+                        title: a.Code,
+                        color: a === toAirport ? 'red' : (a === fromAirport ? 'green' : 'blue')
+                    });
+                    map.entities.push(pushpin);
+                    airportCodes[a.Code] = 1;
+                }
+            });
+        });
+
+        var bounds = new Microsoft.Maps.LocationRect.fromLocations(allLocations);
+        map.setView({ bounds: bounds });
+    }
+</script>
+<script type='text/javascript' src='https://www.bing.com/api/maps/mapcontrol?callback=loadMapScenario' async defer></script>
+
+@ViewBag.results

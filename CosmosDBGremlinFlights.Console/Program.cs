@@ -23,7 +23,7 @@ namespace CosmosDBGremlinFlights.Console
 
         static void Main(string[] args)
         {
-            NConfigurator.UsingFile(@"Custom.config").SetAsSystemDefault();
+            NConfigurator.UsingFile(@"Secrets.config").SetAsSystemDefault();
 
             using (DocumentClient client = new DocumentClient(
                 new Uri(ConfigurationManager.AppSettings["CosmosDBUri"]),
