@@ -6,7 +6,7 @@ Configure and run the [airports an routes loader](#airports-and-routes-loader) t
 
 Configure and run the [web app](#web-app).
 
-<blockquote class="twitter-tweet" data-lang="en"><p lang="en" dir="ltr">Loaded 5600 airports and 36000 flights into <a href="https://twitter.com/AzureCosmosDB">@AzureCosmosDB</a>’s <a href="https://twitter.com/hashtag/Gremlin?src=hash">#Gremlin</a> graph API and had a little fun! <a href="https://twitter.com/hashtag/azdev?src=hash">#azdev</a> <a href="https://t.co/4iOGXTZkff">pic.twitter.com/4iOGXTZkff</a></p>&mdash; Anthony Chu (@nthonyChu) <a href="https://twitter.com/nthonyChu/status/903113052555436033">August 31, 2017</a></blockquote> <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+![Demo](cosmosdb-flights.gif)
 
 
 ## Airports and routes loader
