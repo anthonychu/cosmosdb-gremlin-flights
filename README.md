@@ -2,7 +2,7 @@
 
 Create a Cosmos DB account. In the account, create a database and a graph.
 
-Configure and run the [airports an routes loader](#airports-and-routes-loader) to load data into the graph.
+Configure and run the [airports and routes loader](#airports-and-routes-loader) to load data into the graph.
 
 Configure and run the [web app](#web-app).
 
