@@ -47,7 +47,14 @@ namespace CosmosDBGremlinFlights.Console
             using (var httpClient = new HttpClient())
             {
                 var airportsCsvStream = await httpClient.GetStreamAsync("https://raw.githubusercontent.com/jpatokal/openflights/master/data/airports.dat");
-                using (var reader = new CsvReader(new StreamReader(airportsCsvStream)))
+                using (var fileStream = new FileStream("airports.dat", FileMode.Create, FileAccess.Write))
+                {
+                    await airportsCsvStream.CopyToAsync(fileStream);
+                    airportsCsvStream.Close();
+                }
+
+                using (var fileStream = new FileStream("airports.dat", FileMode.Open))
+                using (var reader = new CsvReader(new StreamReader(fileStream)))
                 {
                     var count = 0;
                     while (reader.Read())
@@ -67,7 +74,7 @@ namespace CosmosDBGremlinFlights.Console
                                 Coordinate = new GeoCoordinate(Convert.ToDouble(lat), Convert.ToDouble(lng))
                             };
                             airports.Add(code, airport);
-                            
+
                             IDocumentQuery<dynamic> query = client.CreateGremlinQuery<dynamic>(graph, gremlinQuery);
                             count++;
 
@@ -82,7 +89,14 @@ namespace CosmosDBGremlinFlights.Console
                 }
 
                 var routesCsvStream = await httpClient.GetStreamAsync("https://raw.githubusercontent.com/jpatokal/openflights/master/data/routes.dat");
-                using (var reader = new CsvReader(new StreamReader(routesCsvStream)))
+                using (var fileStream = new FileStream("routes.dat", FileMode.Create, FileAccess.Write))
+                {
+                    await routesCsvStream.CopyToAsync(fileStream);
+                    routesCsvStream.Close();
+                }
+
+                using (var fileStream = new FileStream("routes.dat", FileMode.Open))
+                using (var reader = new CsvReader(new StreamReader(fileStream)))
                 {
                     var count = 0;
                     while (reader.Read())
