@@ -61,6 +61,7 @@ namespace CosmosDBGremlinFlights.Web.Controllers
             var from = Escape(fromAirport.Code);
             var to = Escape(toAirport.Code);
             var distance = GetDistance(fromAirport, toAirport);
+            var maxDistance = distance * maxDistanceFactor;
 
             var query = client.CreateGremlinQuery<Document>(graph, $"g.V('{from}').union(outE().inV().hasId('{to}'), outE().inV().outE().inV().hasId('{to}')).path()");
             IEnumerable<Journey> allJourneys = new List<Journey>(); 
@@ -68,7 +69,7 @@ namespace CosmosDBGremlinFlights.Web.Controllers
             {
                 var results = await query.ExecuteNextAsync();
                 var journeys = results
-                    .Select(r => GetJourney((JArray)r.objects))
+                    .Select(r => GetJourney((JArray)r.objects, maxDistance))
                     .Where(j => j != null);
                 allJourneys = allJourneys.Concat(journeys);
             }
