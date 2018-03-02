@@ -82,7 +82,7 @@ namespace CosmosDBGremlinFlights.Web.Controllers
             {
                 return new Journey
                 {
-                    TotalDistance = distance,
+                    TotalDistance = totalDistance,
                     Airports = path.Where(i => i["label"].Value<string>() == "airport").Select(i => new Airport(i)).ToArray()
                 };
             }
