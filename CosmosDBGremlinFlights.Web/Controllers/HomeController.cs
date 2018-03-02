@@ -19,6 +19,7 @@ namespace CosmosDBGremlinFlights.Web.Controllers
         public async Task<ActionResult> Index(string from = "", string to = "")
         {
             ViewBag.BingMapsKey = ConfigurationManager.AppSettings["BingMapsKey"];
+            ViewBag.JourneysJson = "[]";
 
             if (string.IsNullOrEmpty(from) || string.IsNullOrEmpty(to)) return View();
 
@@ -26,7 +27,6 @@ namespace CosmosDBGremlinFlights.Web.Controllers
             from = Regex.Replace(from, @"\W", "").ToUpper();
             to = Regex.Replace(to, @"\W", "").ToUpper();
 
-            ViewBag.JourneysJson = "[]";
             ViewBag.From = from;
             ViewBag.To = to;
             
