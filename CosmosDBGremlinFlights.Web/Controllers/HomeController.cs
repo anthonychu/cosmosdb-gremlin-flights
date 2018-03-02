@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Device.Location;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Microsoft.Azure.Documents;
@@ -15,12 +16,19 @@ namespace CosmosDBGremlinFlights.Web.Controllers
 {
     public class HomeController : Controller
     {
-        public async Task<ActionResult> Index(string from, string to)
+        public async Task<ActionResult> Index(string from = "", string to = "")
         {
+            if (string.IsNullOrEmpty(from) || string.IsNullOrEmpty(to)) return View();
+
+            // clean input
+            from = Regex.Replace(from, @"\W", "").ToUpperInvariant();
+            to = Regex.Replace(to, @"\W", "").ToUpperInvariant();
+
             ViewBag.JourneysJson = "[]";
+            ViewBag.From = from;
+            ViewBag.To = to;
             ViewBag.BingMapsKey = ConfigurationManager.AppSettings["BingMapsKey"];
 
-            if (string.IsNullOrEmpty(from) || string.IsNullOrEmpty(to)) return View();
 
             using (DocumentClient client = new DocumentClient(
                new Uri(ConfigurationManager.AppSettings["CosmosDBUri"]),
@@ -40,7 +48,7 @@ namespace CosmosDBGremlinFlights.Web.Controllers
 
         private async Task<Airport> GetAirportAsync(string code, DocumentClient client, DocumentCollection graph)
         {
-            var query = client.CreateGremlinQuery<Document>(graph, $"g.V('{Escape(code.ToUpperInvariant())}')");
+            var query = client.CreateGremlinQuery<Document>(graph, $"g.V('{Escape(code)}')");
             var results = await query.ExecuteNextAsync();
             var airportVertex = results.SingleOrDefault();
             
@@ -63,7 +71,7 @@ namespace CosmosDBGremlinFlights.Web.Controllers
             var distance = GetDistance(fromAirport, toAirport);
             var maxDistance = distance * maxDistanceFactor;
 
-            var query = client.CreateGremlinQuery<Document>(graph, $"g.V('{from}').union(outE().inV().hasId('{to}'), outE().inV().outE().inV().hasId('{to}')).path()");
+            var query = client.CreateGremlinQuery<Document>(graph, $"g.V('{from}').union(out().hasId('{to}'), out().out().hasId('{to}')).path()");
             IEnumerable<Journey> allJourneys = new List<Journey>(); 
             while (query.HasMoreResults)
             {

@@ -6,9 +6,9 @@
     <div class="col-md-12">
         <h1>Find Flights</h1>
         <form class="form-inline" method="get">
-            <input type="text" name="from" class="form-control" placeholder="From" />
-            <input type="text" name="to" class="form-control" placeholder="To" />
-            <input type="submit"class="btn btn-default" value="Submit" />
+            @Html.TextBox("from", (string)ViewBag.From, new { @class = "form-control", placeholder = "From (Airport code)" })
+            @Html.TextBox("to", (string)ViewBag.To, new { @class = "form-control", placeholder = "To (Airport code)" })
+            <input type="submit" class="btn btn-default" value="Submit" />
         </form>
         <hr />
     </div>
