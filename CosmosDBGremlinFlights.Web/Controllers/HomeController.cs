@@ -67,10 +67,12 @@ namespace CosmosDBGremlinFlights.Web.Controllers
             while (query.HasMoreResults)
             {
                 var results = await query.ExecuteNextAsync();
-                var journeys = results.Select(r => GetJourney((JArray)r.objects));
+                var journeys = results
+                    .Select(r => GetJourney((JArray)r.objects))
+                    .Where(j => j.TotalDistance < distance * maxDistanceFactor);
                 allJourneys = allJourneys.Concat(journeys);
             }
-            return allJourneys.Where(j => j.TotalDistance < distance * maxDistanceFactor);
+            return allJourneys;
         }
 
         private Journey GetJourney(JArray path)
