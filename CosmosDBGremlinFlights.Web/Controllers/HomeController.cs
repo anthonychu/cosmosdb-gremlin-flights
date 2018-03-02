@@ -54,32 +54,43 @@ namespace CosmosDBGremlinFlights.Web.Controllers
             }
         }
 
-        private async Task<IEnumerable<dynamic>> GetRoutes(Airport fromAirport, Airport toAirport, DocumentClient client, DocumentCollection graph)
+        private async Task<IEnumerable<Journey>> GetRoutes(Airport fromAirport, Airport toAirport, DocumentClient client, DocumentCollection graph)
         {
             const double maxDistanceFactor = 1.5;
 
             var from = Escape(fromAirport.Code);
             var to = Escape(toAirport.Code);
             var distance = GetDistance(fromAirport, toAirport);
+            var maxDistance = distance * maxDistanceFactor;
 
             var query = client.CreateGremlinQuery<Document>(graph, $"g.V('{from}').union(outE().inV().hasId('{to}'), outE().inV().outE().inV().hasId('{to}')).path()");
             IEnumerable<Journey> allJourneys = new List<Journey>(); 
             while (query.HasMoreResults)
             {
                 var results = await query.ExecuteNextAsync();
-                var journeys = results.Select(r => GetJourney((JArray)r.objects));
+                var journeys = results
+                    .Select(r => GetJourney((JArray)r.objects, maxDistance))
+                    .Where(j => j != null);
                 allJourneys = allJourneys.Concat(journeys);
             }
-            return allJourneys.Where(j => j.TotalDistance < distance * maxDistanceFactor);
+            return allJourneys;
         }
 
-        private Journey GetJourney(JArray path)
+        private Journey GetJourney(JArray path, double maxDistance)
         {
-            return new Journey
+            var totalDistance = path.Where(i => i["label"].Value<string>() == "flight").Cast<dynamic>().Sum(f => (double)f.properties.distance.Value);
+            if (totalDistance < maxDistance)
             {
-                TotalDistance = path.Where(i => i["label"].Value<string>() == "flight").Cast<dynamic>().Sum(f => (double)f.properties.distance.Value),
-                Airports = path.Where(i => i["label"].Value<string>() == "airport").Select(i => new Airport(i)).ToArray()
-            };
+                return new Journey
+                {
+                    TotalDistance = totalDistance,
+                    Airports = path.Where(i => i["label"].Value<string>() == "airport").Select(i => new Airport(i)).ToArray()
+                };
+            }
+            else
+            {
+                return null;
+            }
         }
 
         private double GetDistance(Airport fromAirport, Airport toAirport)
