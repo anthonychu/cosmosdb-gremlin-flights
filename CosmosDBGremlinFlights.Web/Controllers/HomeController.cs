@@ -54,7 +54,7 @@ namespace CosmosDBGremlinFlights.Web.Controllers
             }
         }
 
-        private async Task<IEnumerable<dynamic>> GetRoutes(Airport fromAirport, Airport toAirport, DocumentClient client, DocumentCollection graph)
+        private async Task<IEnumerable<Journey>> GetRoutes(Airport fromAirport, Airport toAirport, DocumentClient client, DocumentCollection graph)
         {
             const double maxDistanceFactor = 1.5;
 
@@ -69,19 +69,27 @@ namespace CosmosDBGremlinFlights.Web.Controllers
                 var results = await query.ExecuteNextAsync();
                 var journeys = results
                     .Select(r => GetJourney((JArray)r.objects))
-                    .Where(j => j.TotalDistance < distance * maxDistanceFactor);
+                    .Where(j => j != null);
                 allJourneys = allJourneys.Concat(journeys);
             }
             return allJourneys;
         }
 
-        private Journey GetJourney(JArray path)
+        private Journey GetJourney(JArray path, double maxDistance)
         {
-            return new Journey
+            var totalDistance = path.Where(i => i["label"].Value<string>() == "flight").Cast<dynamic>().Sum(f => (double)f.properties.distance.Value);
+            if (totalDistance < maxDistance)
             {
-                TotalDistance = path.Where(i => i["label"].Value<string>() == "flight").Cast<dynamic>().Sum(f => (double)f.properties.distance.Value),
-                Airports = path.Where(i => i["label"].Value<string>() == "airport").Select(i => new Airport(i)).ToArray()
-            };
+                return new Journey
+                {
+                    TotalDistance = distance,
+                    Airports = path.Where(i => i["label"].Value<string>() == "airport").Select(i => new Airport(i)).ToArray()
+                };
+            }
+            else
+            {
+                return null;
+            }
         }
 
         private double GetDistance(Airport fromAirport, Airport toAirport)
