@@ -18,18 +18,18 @@ namespace CosmosDBGremlinFlights.Web.Controllers
     {
         public async Task<ActionResult> Index(string from = "", string to = "")
         {
+            ViewBag.BingMapsKey = ConfigurationManager.AppSettings["BingMapsKey"];
+
             if (string.IsNullOrEmpty(from) || string.IsNullOrEmpty(to)) return View();
 
             // clean input
-            from = Regex.Replace(from, @"\W", "").ToUpperInvariant();
-            to = Regex.Replace(to, @"\W", "").ToUpperInvariant();
+            from = Regex.Replace(from, @"\W", "").ToUpper();
+            to = Regex.Replace(to, @"\W", "").ToUpper();
 
             ViewBag.JourneysJson = "[]";
             ViewBag.From = from;
             ViewBag.To = to;
-            ViewBag.BingMapsKey = ConfigurationManager.AppSettings["BingMapsKey"];
-
-
+            
             using (DocumentClient client = new DocumentClient(
                new Uri(ConfigurationManager.AppSettings["CosmosDBUri"]),
                ConfigurationManager.AppSettings["CosmosDBKey"],
