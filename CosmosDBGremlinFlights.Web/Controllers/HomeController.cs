@@ -71,7 +71,7 @@ namespace CosmosDBGremlinFlights.Web.Controllers
             var distance = GetDistance(fromAirport, toAirport);
             var maxDistance = distance * maxDistanceFactor;
 
-            var query = client.CreateGremlinQuery<Document>(graph, $"g.V('{from}').union(out().hasId('{to}'), outE().inV().out().hasId('{to}')).path()");
+            var query = client.CreateGremlinQuery<Document>(graph, $"g.V('{from}').union(outE().inV().hasId('{to}'), outE().inV().outE().inV().hasId('{to}')).path()");
             IEnumerable<Journey> allJourneys = new List<Journey>(); 
             while (query.HasMoreResults)
             {
