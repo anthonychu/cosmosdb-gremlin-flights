@@ -13,6 +13,7 @@ using System.Device.Location;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace CosmosDBGremlinFlights.Console
@@ -59,18 +60,19 @@ namespace CosmosDBGremlinFlights.Console
                     var count = 0;
                     while (reader.Read())
                     {
-                        var name = reader.GetField(1);
+                        var city = Regex.Replace(reader.GetField(2), @"[^\w']", "").Replace("'", @"\'");
+                        var country = Regex.Replace(reader.GetField(3), @"[^\w']", "").Replace("'", @"\'");
                         var code = reader.GetField(4);
                         var lat = reader.GetField(6);
                         var lng = reader.GetField(7);
 
                         if (!new string[] { @"\N", "N/A", "" }.Contains(code))
                         {
-                            var gremlinQuery = $"g.addV('airport').property('id', \"{code}\").property('latitude', {lat}).property('longitude', {lng})";
+                            var gremlinQuery = $"g.addV('airport').property('id', \"{code}\").property('latitude', {lat}).property('longitude', {lng}).property('city', '{city}').property('country', '{country}')";
                             var airport = new Airport
                             {
                                 Code = code,
-                                Name = name,
+                                Name = city,
                                 Coordinate = new GeoCoordinate(Convert.ToDouble(lat), Convert.ToDouble(lng))
                             };
                             airports.Add(code, airport);
